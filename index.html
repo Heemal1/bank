@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Web3.js Example</title>
+    <!-- Load jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Load Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <input type="text" id="amount" placeholder="Enter amount">
+    <p>Balance: <span id="balance"></span></p>
+    <button id="deposit">Deposit</button>
+    <button id="withdraw">Withdraw</button>
+
+    <!-- Script with Web3.js logic -->
+    <script>
+        $(document).ready(function() {
+            if (typeof web3 !== 'undefined') {
+                // Initialize Web3 with the current provider
+                web3 = new Web3(web3.currentProvider);
+                
+                // Request access to MetaMask accounts (if not already authorized)
+                web3.eth.requestAccounts();
+
+                // Contract ABI and address
+                var address = //"add";
+                var abi =// abi ;
+
+            var contract = new web3.eth.Contract(abi, address);
+
+            // Update the balance display
+            contract.methods.getBalance().call()
+                .then(function(bal) {
+                    $('#balance').text(bal.toString());
+                })
+                .catch(function(error) {
+                    console.error("Error fetching balance:", error);
+                });
+
+            // Handle deposit
+            $('#deposit').click(function() {
+                var amt = parseInt($('#amount').val());
+                if (isNaN(amt) || amt <= 0) {
+                    alert("Please enter a valid positive amount.");
+                    return;
+                }
+                web3.eth.getAccounts()
+                    .then(function(accounts) {
+                        var acc = accounts[0];
+                        return contract.methods.deposit(amt).send({ from: acc });
+                    })
+                    .then(function(tx) {
+                        console.log("Deposit transaction:", tx);
+                    })
+                    .catch(function(error) {
+                        console.error("Error during deposit:", error);
+                    });
+            });
+
+            // Handle withdraw
+            $('#withdraw').click(function() {
+                var amt = parseInt($('#amount').val());
+                if (isNaN(amt) || amt <= 0) {
+                    alert("Please enter a valid positive amount.");
+                    return;
+                }
+                web3.eth.getAccounts()
+                    .then(function(accounts) {
+                        var acc = accounts[0];
+                        return contract.methods.withdraw(amt).send({ from: acc });
+                    })
+                    .then(function(tx) {
+                        console.log("Withdraw transaction:", tx);
+                    })
+                    .catch(function(error) {
+                        console.error("Error during withdraw:", error);
+                    });
+            });
+
+        } else {
+            console.error("Web3 not found. Please ensure MetaMask or another provider is installed.");
+        }
+    });
+    </script>
+</body>
+</html>
